@@ -1,0 +1,40 @@
+---
+- name: Install m2crypto
+  apt: pkg=python-m2crypto
+
+- name: Install pip Python package manager
+  apt: pkg=python-pip
+
+- name: Add the Shadowsocks user
+  user: name=shadowsocks
+        home=/home/shadowsocks
+        shell=/usr/sbin/nologin
+        comment="Shadowsocks User"
+
+- name: Install gevent for Python
+  apt: pkg=python-gevent
+
+- name: Install Shadowsocks
+  pip: name=shadowsocks
+
+- name: Generate Shadowsocks config file
+  template: src=config.json.j2
+            dest=/home/shadowsocks/config.json
+            owner=shadowsocks
+            group=shadowsocks
+            mode=640
+
+- name: Copy Shadowsocks init script
+  copy: src=shadowsocks-init
+        dest=/etc/init.d/shadowsocks
+        owner=root
+        group=root
+        mode=755
+
+- name: Enable the Shadowsocks init script so the service will start at boot
+  command: update-rc.d shadowsocks defaults
+           creates=/etc/rc0.d/K20shadowsocks
+
+- name: Start Shadowsocks
+  service: name=shadowsocks
+           state=started
