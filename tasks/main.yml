@@ -1,18 +1,17 @@
 ---
-- name: Install m2crypto
-  apt: pkg=python-m2crypto
-
-- name: Install pip Python package manager
-  apt: pkg=python-pip
+- name: Install Shadowsocks dependencies
+  apt: pkg={{ item }}
+  with_items:
+    - python-gevent
+    - python-m2crypto
+    - python-pip
+    - qrencode
 
 - name: Add the Shadowsocks user
   user: name=shadowsocks
         home=/home/shadowsocks
         shell=/usr/sbin/nologin
         comment="Shadowsocks User"
-
-- name: Install gevent for Python
-  apt: pkg=python-gevent
 
 - name: Install Shadowsocks
   pip: name=shadowsocks
@@ -38,3 +37,23 @@
 - name: Start Shadowsocks
   service: name=shadowsocks
            state=started
+
+- name: Generate the Shadowsocks QR code
+  # The ss:// URI format is documented here:
+  #   http://shadowsocks.org/1.4/config/quick-guide.html
+  shell: echo -n '{{ shadowsocks_encryption_method }}:{{ shadowsocks_password }}@{{ ansible_default_ipv4.address }}:{{ shadowsocks_server_port }}' | base64 | sed 's/^/ss:\/\//' | qrencode -s 15 -o ss.png
+         chdir=/home/shadowsocks
+
+- name: Set permissions on the QR code image
+  file: path=/home/shadowsocks/ss.png
+        owner=shadowsocks
+        group=shadowsocks
+        mode=640
+
+- name: Fetch the QR code image
+  fetch: dest=/tmp/shadowsocks-qr-code/
+         src=/home/shadowsocks/ss.png
+         flat=yes
+
+- name: Pause for explanation
+  pause: prompt="A custom QR code that can be used to automatically configure your Shadowsocks clients has been downloaded to /tmp/shadowsocks-qr-code/ss.png. Simply scan this image to get up and running quickly. Look for the option when creating a new profile in the iOS and Android applications. Press any key to continue..."
