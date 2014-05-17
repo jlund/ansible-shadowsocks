@@ -15,18 +15,18 @@ PIDFILE=/var/run/shadowsocks.pid
 
 case "$1" in
   start)
-    echo "Starting shadowsocks"
-    start-stop-daemon --start --chuid shadowsocks --chdir /home/shadowsocks --background --make-pidfile --pidfile $PIDFILE --exec /usr/local/bin/ssserver -- > /dev/null
+    echo "Starting Shadowsocks"
+    start-stop-daemon --start --chuid shadowsocks --chdir {{ shadowsocks_location }} --background --make-pidfile --pidfile $PIDFILE --exec /usr/local/bin/ssserver -- > /dev/null
     ;;
   stop)
-    echo "Stopping shadowsocks"
+    echo "Stopping Shadowsocks"
     start-stop-daemon --stop --pidfile $PIDFILE
     ;;
   restart)
-    echo "Restarting shadowsocks"
+    echo "Restarting Shadowsocks"
     start-stop-daemon --stop --pidfile $PIDFILE
     sleep 5
-    start-stop-daemon --start --chuid shadowsocks --chdir /home/shadowsocks --background --make-pidfile --pidfile $PIDFILE --exec /usr/local/bin/ssserver -- > /dev/null
+    start-stop-daemon --start --chuid shadowsocks --chdir {{ shadowsocks_location }} --background --make-pidfile --pidfile $PIDFILE --exec /usr/local/bin/ssserver -- > /dev/null
     ;;
   *)
     echo "Usage: /etc/init.d/shadowsocks {start|stop|restart}"

@@ -1,18 +1,14 @@
 Shadowsocks
 ========
 
-Ansible role that installs the Shadowsocks secure SOCKS 5 proxy (http://shadowsocks.org).
+Ansible role that installs the Shadowsocks secure SOCKS 5 proxy (http://shadowsocks.org). A random password is automatically chosen, and a QR code is generated that makes it easy to configure the iOS and Android clients.
 
 Role Variables
 --------------
 
 Gathered facts are used to determine the default IPv4 address that the server should bind to. Make sure that gather_facts is not set to "no" in your playbook.
 
-**Variables that *must* be set by the user (or another role)**
-
-> shadowsocks_password: The password you will use to authenticate with the Shadowsocks server.
-
-**Variables that *can* be set by the user (or another role)**
+**Variables that can be set by the user (or another role)**
 
 > shadowsocks_server_port: The port that the Shadowsocks server should listen on. Set to "8388" by default.
 
